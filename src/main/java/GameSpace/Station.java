@@ -41,10 +41,10 @@ public class Station {
         if (now.toLocalTime().compareTo(Periods.MORNING_START.getTime()) < 0 ||
                 (now.toLocalTime().compareTo(Periods.MORNING_END.getTime()) > 0
                         &&
-                        now.toLocalTime().compareTo(Periods.EVENING_START.getTime()) > 0) ||
-                now.toLocalTime().compareTo(Periods.EVENING_END.getTime()) < 0
+                        now.toLocalTime().compareTo(Periods.EVENING_START.getTime()) < 0) ||
+                now.toLocalTime().compareTo(Periods.EVENING_END.getTime()) > 0
         ) {
-            System.out.println("Can't fit a session");
+            System.out.println("Can't fit a session one");
             return false;
         }
         if (this.sessions.isEmpty()) {
@@ -56,15 +56,15 @@ public class Station {
 
         if (lastSessionStartingTime.plusMinutes(duration.minutes).compareTo(Periods.MORNING_START.getTime()) > 0 &&
                 lastSessionStartingTime.plusMinutes(duration.minutes).compareTo(Periods.MORNING_END.getTime()) < 0) {
-            this.sessions.add(new Session(fullName, this, duration.price, duration.price, now.toLocalDate(), now.toLocalTime()));
+            this.sessions.add(new Session(fullName, this, duration.price, duration.price, now.toLocalDate(), lastSessionStartingTime.plusMinutes(duration.minutes)));
             return true;
         }
         if (lastSessionStartingTime.plusMinutes(duration.minutes).compareTo(Periods.EVENING_START.getTime()) > 0 &&
                 lastSessionStartingTime.plusMinutes(duration.minutes).compareTo(Periods.EVENING_END.getTime()) < 0) {
-            this.sessions.add(new Session(fullName, this, duration.price, duration.price, now.toLocalDate(), now.toLocalTime()));
+            this.sessions.add(new Session(fullName, this, duration.price, duration.price, now.toLocalDate(), lastSessionStartingTime.plusMinutes(duration.minutes)));
             return true;
         }
-        System.out.println("Can't fit a session");
+        System.out.println("Can't fit a session two");
         return false;
     }
 
@@ -72,9 +72,10 @@ public class Station {
     public String toString() {
         String out = "";
         if (!this.sessions.isEmpty()) {
-            out = "\n";
+            int i = 1;
             for (Session session : this.sessions) {
-                out += session.getFullName() + " " +
+                out += "    \nSession " + i +
+                        session.getFullName() + " " +
                         " starts at : " +
                         session.getStartingTime().truncatedTo(ChronoUnit.MINUTES) + " " +
                         " ends at : " +
@@ -82,6 +83,7 @@ public class Station {
                         " (" +
                         session.getDuration() +
                         " min)";
+                i++;
             }
         }
         return "name -> " + name +
