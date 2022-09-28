@@ -44,18 +44,31 @@ public class Station {
                         now.toLocalTime().compareTo(Periods.EVENING_START.getTime()) < 0) ||
                 now.toLocalTime().compareTo(Periods.EVENING_END.getTime()) > 0
         ) {
-            System.out.println("Can't fit a session one");
+            System.out.println("Can't fit a session");
             return false;
         }
         if (this.sessions.isEmpty()) {
+            if(now.toLocalTime().compareTo(Periods.MORNING_END.getTime()) < 0 && now.toLocalTime().plusMinutes(duration.minutes).compareTo(Periods.EVENING_START.getTime()) > 0){
+                System.out.println("Can't fit a session");
+                return false;
+            }
+//            if(now.toLocalTime().compareTo(Periods.MORNING_START.getTime()) < 0 && now.toLocalTime().plusMinutes(duration.minutes).compareTo(Periods.MORNING_END.getTime()) > 0 ||
+//                    now.toLocalTime().compareTo(Periods.EVENING_START.getTime()) < 0 && now.toLocalTime().plusMinutes(duration.minutes).compareTo(Periods.EVENING_END.getTime()) > 0
+//            ){
+//                System.out.println("Can't fit a session");
+//                return false;
+//            }
             this.sessions.add(new Session(fullName, this, duration.minutes, duration.price, now.toLocalDate(), now.toLocalTime(), game));
             return true;
         }
         Session lastSession = this.sessions.get(this.sessions.size() - 1);
         LocalTime lastSessionStartingTime = lastSession.getStartingTime().plusMinutes(lastSession.getDuration());
 
-        if (lastSessionStartingTime.plusMinutes(duration.minutes).compareTo(Periods.MORNING_START.getTime()) > 0 &&
-                lastSessionStartingTime.plusMinutes(duration.minutes).compareTo(Periods.MORNING_END.getTime()) < 0) {
+        if (lastSessionStartingTime.compareTo(Periods.MORNING_START.getTime()) > 0) {
+            if(lastSessionStartingTime.compareTo(Periods.MORNING_END.getTime()) < 0 && lastSessionStartingTime.plusMinutes(duration.minutes).compareTo(Periods.EVENING_START.getTime()) > 0){
+                System.out.println("Can't fit a session");
+                return false;
+            }
             this.sessions.add(new Session(fullName, this, duration.minutes, duration.price, now.toLocalDate(), lastSessionStartingTime, game));
             return true;
         }
@@ -64,7 +77,7 @@ public class Station {
             this.sessions.add(new Session(fullName, this, duration.minutes, duration.price, now.toLocalDate(), lastSessionStartingTime, game));
             return true;
         }
-        System.out.println("Can't fit a session two");
+        System.out.println("Can't fit a session");
         return false;
     }
 
