@@ -52,6 +52,7 @@ public class GameSpace {
     private void ReserveStation() {
         try {
             Scanner scanner = new Scanner(System.in);
+            String game = ChooseGame();
             ListAvailableStations();
             int stationNumber = scanner.nextInt();
             Station station = GameSpaceConstants.STATIONS.get(stationNumber - 1);
@@ -64,14 +65,35 @@ public class GameSpace {
             System.out.print("Enter full name: ");
             scanner.next();
             String fullName = scanner.nextLine();
-            boolean sessionAdded = station.AddSession(fullName, Durations.values()[duration - 1]);
-            if(sessionAdded){
+            boolean sessionAdded = station.AddSession(fullName, Durations.values()[duration - 1], game);
+            if (sessionAdded) {
                 this.todaysTotalRevnue += Durations.values()[duration - 1].price;
             }
         } catch (Exception e) {
             System.out.println("Invalid input");
         }
 
+    }
+
+    private String ChooseGame() {
+        try {
+            Scanner scanner = new Scanner(System.in);
+            int i = 0;
+            for (Games game : Games.values()) {
+                System.out.println(i + 1 + " -> " + game);
+                i++;
+            }
+            int type = scanner.nextInt();
+            Games game = Games.values()[type - 1];
+            for (i = 0; i < game.getGames().size(); i++) {
+                System.out.println(i + 1 + " -> " + game.getGames().get(i));
+            }
+            int gameNum = scanner.nextInt();
+            return game.getGames().get(gameNum - 1);
+        } catch (Exception e) {
+            System.out.println("Invalid input");
+            return "";
+        }
     }
 
 //    private void CheckAvailability() {
@@ -89,7 +111,7 @@ public class GameSpace {
         LocalTime now = LocalTime.now();
         for (Durations duration : Durations.values()) {
 //            if (now.plusMinutes(duration.minutes).compareTo(max) <= 0) {
-                System.out.println(i + 1 + " -> " + duration.minutes + " minutes for " + duration.price + " dh");
+            System.out.println(i + 1 + " -> " + duration.minutes + " minutes for " + duration.price + " dh");
 //            }
             i++;
         }
@@ -99,7 +121,7 @@ public class GameSpace {
         int i = 1;
         for (Station station : GameSpaceConstants.STATIONS) {
 //            if (station.isAvailable())
-                System.out.println(i + " -> " + station);
+            System.out.println(i + " -> " + station);
             i++;
         }
     }
