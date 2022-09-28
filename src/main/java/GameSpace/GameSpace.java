@@ -1,16 +1,17 @@
 package GameSpace;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Scanner;
 
 public class GameSpace {
-
-    private static HashMap<String, Session> Reservations;
+    private int todaysTotalRevnue;
 
     public GameSpace() {
-        Reservations = new HashMap<>();
+        this.todaysTotalRevnue = 0;
     }
 
     public void Start() {
@@ -24,7 +25,8 @@ public class GameSpace {
             while (true) {
                 System.out.println("1-List all stations");
                 System.out.println("2-Reserve a station");
-                System.out.println("3-");
+//                System.out.println("3-Check availability");
+                System.out.println("4-Check availability");
                 System.out.println("0- quit");
                 System.out.print("Your choice: ");
                 choice = scanner.nextInt();
@@ -32,12 +34,19 @@ public class GameSpace {
                 switch (choice) {
                     case 1 -> ListStations();
                     case 2 -> ReserveStation();
+//                    case 3 -> CheckAvailability();
+                    case 4 -> PrintTodaysRevenue();
+                    default -> System.out.println("Choose a valid command!");
                 }
             }
 
         } catch (Exception e) {
             System.out.println("Invalid input");
         }
+    }
+
+    private void PrintTodaysRevenue() {
+        System.out.println("Revenue for " + LocalDate.now() + " : " + this.todaysTotalRevnue + " dh");
     }
 
     private void ReserveStation() {
@@ -51,21 +60,37 @@ public class GameSpace {
             }
             ListDurations();
             int duration = scanner.nextInt();
-            Reservations.put("test", new Session("", station, Durations.values()[duration - 1].minutes));
+            LocalDateTime ldt = LocalDateTime.now();
+            System.out.print("Enter full name: ");
+            scanner.next();
+            String fullName = scanner.nextLine();
+            boolean sessionAdded = station.AddSession(fullName, Durations.values()[duration - 1]);
+            if(sessionAdded){
+                this.todaysTotalRevnue += Durations.values()[duration - 1].price;
+            }
         } catch (Exception e) {
             System.out.println("Invalid input");
         }
 
     }
 
+//    private void CheckAvailability() {
+//        for (Station station : GameSpaceConstants.STATIONS) {
+//            for (Session session: getSessionWhereStation(station)) {
+//                System.out.println(session);
+//            }
+//        }
+//    }
+
+
     private void ListDurations() {
         int i = 0;
-        LocalTime max = LocalTime.of(12, 15);
+//        LocalTime max = LocalTime.of(12, 15);
         LocalTime now = LocalTime.now();
         for (Durations duration : Durations.values()) {
-            if (now.plusMinutes(duration.minutes).compareTo(max) <= 0) {
+//            if (now.plusMinutes(duration.minutes).compareTo(max) <= 0) {
                 System.out.println(i + 1 + " -> " + duration.minutes + " minutes for " + duration.price + " dh");
-            }
+//            }
             i++;
         }
     }
@@ -73,7 +98,7 @@ public class GameSpace {
     private void ListAvailableStations() {
         int i = 1;
         for (Station station : GameSpaceConstants.STATIONS) {
-            if (station.isAvailable())
+//            if (station.isAvailable())
                 System.out.println(i + " -> " + station);
             i++;
         }
